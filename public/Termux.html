@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Termux Full Guide — By Boss</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffffff, #0a0a0a, #1e1e1e, #222, #111);
+    background-size: 400% 400%;
+    animation: gradient 12s ease infinite;
+    color: #fff;
+    padding: 15px;
+    line-height: 1.6;
+  }
+
+  @keyframes gradient {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+  }
+
+  h1 {
+    text-align: center;
+    color: #00ffff;
+    text-shadow: 0 0 20px #00ffff;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+
+  .section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 10px #00ffff33;
+  }
+
+  h2 {
+    color: #ffffff;
+    text-shadow: 0 0 5px #ff0000;
+    font-size: 1.1em;
+  }
+
+  pre {
+    background: rgba(255, 255, 255, 0.07);
+    color: #00ffcc;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 1em;
+    overflow-x: auto;
+  }
+
+  a {
+    color: #00ffff;
+    text-decoration: underline;
+    font-weight: bold;
+  }
+
+  a:hover {
+    color: #ff66ff;
+    text-shadow: 0 0 10px #ff66ff;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .yt {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: white;
+    background: #ff0000;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 0 20px #ff000080;
+    transition: 0.3s;
+  }
+
+  .yt:hover {
+    background: #ff4d4d;
+    box-shadow: 0 0 25px #ff0000;
+  }
+
+  .yt img {
+    width: 28px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🔥 Termux Full Command Guide — For Boss 💪</h1>
+
+<div class="section">
+  <h2>1️⃣ Termux Download Link</h2>
+  <p><a href="https://f-droid.org/en/packages/com.termux" target="_blank">
+  https://f-droid.org/en/packages/com.termux</a></p>
+</div>
+
+<div class="section">
+  <h2>2️⃣ Termux Storage Permission Setup</h2>
+  <pre>termux-setup-storage</pre>
+</div>
+
+<div class="section">
+  <h2>3️⃣ Termux PKG Install Command</h2>
+  <pre>apt update && apt upgrade -y
+pkg update && pkg upgrade -y
+
+apt install python -y
+apt install python3 -y
+pkg install nodejs
+pkg install php
+pkg install wget curl openssh git -y</pre>
+</div>
+
+<div class="section">
+  <h2>4️⃣ Termux Main Commands</h2>
+  <pre>rm -rf        → Delete file
+cd             → Open folder
+cd ..          → Back to previous folder
+ls -a          → Show hidden files
+cp -r          → Copy folder
+mpv            → Play MP3 Music
+mkdir          → Create new folder
+touch          → Create file 🗃️
+pwd            → Show file path directory
+zip -m         → Zip and delete old file
+nuzip          → Unzip file
+exit           → CTRL + D to exit Termux</pre>
+</div>
+
+<div class="section">
+  <h2>5️⃣ Termux Shortcut Command Add</h2>
+  <pre>nano .bashrc
+alias any_name='add file path and code'
+
+alias 0='clear'
+alias l='ls'
+alias dl='/storage/emulated/0/Download'
+alias yt='echo -e "\033[1;33m https://youtube.com/@hackedtips"'
+
+source ~/.bashrc</pre>
+</div>
+
+<div class="section">
+  <h2>6️⃣ Termux Extra Keys and Buttons</h2>
+  <pre>nano .termux/termux.properties
+
+shortcut.create-session = ctrl + t
+extra-keys = [['TAB','//','-',':',';','"','_','>'], \
+              ['nano ','HOME','PASTE',' ','ENTER','UP','END','{}'], \
+              ['ALT','CTRL','cd ..','KEYBOARD','LEFT','DOWN','RIGHT','()']]
+
+(File Save > CTRL + X → Y → Enter)
+termux-reload-settings</pre>
+</div>
+
+<div class="section">
+  <h2>7️⃣ Localhost Python</h2>
+  <pre>python -m http.server 8080
+http://127.0.0.1:8080
+
+python3 -m http.server
+http://[::]:8000/</pre>
+</div>
+
+<div class="section">
+  <h2>8️⃣ PHP Server Localhost</h2>
+  <pre>php -S localhost:8080 -t "$HOME/jiotv-server"
+
+php -S localhost:8080
+http://127.0.0.1:8080
+
+pkg install apache2
+apachectl</pre>
+</div>
+
+<div class="section">
+  <h2>9️⃣ Termux Public Tunnel and Server</h2>
+  <pre>pkg install cloudflared
+cloudflared tunnel --url http://localhost:8080
+Cloudflared URL View</pre>
+</div>
+
+<div class="section">
+  <h2>🔟 Termux Banner Add</h2>
+  <pre>echo -e "\033[1;32m    "</pre>
+  <p>Create custom banners from:
+  <a href="http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20" target="_blank">
+  http://patorjk.com/software/taag</a></p>
+  <p>And don’t forget to visit:
+  <a href="https://youtube.com/@zeroxploid" target="_blank">https://youtube.com/@zeroxploid</a></p>
+</div>
+
+<div class="footer">
+  <a class="yt" href="https://youtube.com/@zeroxploid" target="_blank">
+    Subscribe Channel
+  </a>
+</div>
+
+</body>
+</html>

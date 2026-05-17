@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ZeroXploid Rainbow Snake</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+        }
+        body {
+            background: #050a14;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            padding: 10px;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .header-section { text-align: center; }
+
+        h1 {
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, red, orange, yellow, green, cyan, blue, violet);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+
+        .score-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 25px;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 1px solid #5faaff;
+            margin-top: 5px;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(95, 170, 255, 0.3);
+        }
+
+        canvas {
+            width: 300px;
+            height: 300px;
+            background: #0f1a2b;
+            border-radius: 12px;
+            border: 2px solid #334a6e;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .speed-row { display: flex; gap: 8px; }
+        .speed-btn {
+            background: #1f3d62;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        .speed-btn.active { background: #00ddff; color: #000; font-weight: bold; }
+
+        .control-pad {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-row { display: flex; gap: 15px; }
+        .ctrl-button {
+            width: 65px;
+            height: 65px;
+            background: #1e3347;
+            border: 2px solid #4c8fd8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 0 #0a1424;
+        }
+        .ctrl-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0a1424;
+            background: #2a4c7a;
+        }
+        .ctrl-button img { width: 28px; pointer-events: none; }
+        .pause-btn { background: #334a6e; width: 60px; height: 60px; }
+
+        footer { font-size: 0.7rem; color: #556a8b; }
+    </style>
+</head>
+<body>
+
+<div class="header-section">
+    <h1>RAINBOW SNAKE</h1>
+    <div class="score-panel">🍎 <span id="scoreDisplay">0</span></div>
+</div>
+
+<canvas id="gameCanvas" width="300" height="300"></canvas>
+
+<div class="speed-row">
+    <button class="speed-btn" id="s1">🐢</button>
+    <button class="speed-btn active" id="s2">⚡</button>
+    <button class="speed-btn" id="s3">🚀</button>
+</div>
+
+<div class="control-pad">
+    <div class="btn-row">
+        <button class="ctrl-button" id="moveUp"><img src="https://img.icons8.com/ios-filled/50/ffffff/up.png"></button>
+    </div>
+    <div class="btn-row">
+        <button class="ctrl-button" id="moveLeft"><img src="https://img.icons8.com/ios-filled/50/ffffff/left.png"></button>
+        <button class="ctrl-button pause-btn" id="pauseBtn"><img src="https://img.icons8.com/ios-filled/50/ffffff/pause.png" id="pauseImg"></button>
+        <button class="ctrl-button" id="moveRight"><img src="https://img.icons8.com/ios-filled/50/ffffff/right.png"></button>
+    </div>
+    <div class="btn-row">
+        <button class="ctrl-button" id="moveDown"><img src="https://img.icons8.com/ios-filled/50/ffffff/down.png"></button>
+    </div>
+</div>
+
+<footer>ZeroXploid v1.0 • <a href="https://youtube.com/@zeroxploid" target="_blank">YT</a></footer>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const pauseImg = document.getElementById('pauseImg');
+
+    const GRID = 30; 
+    const SIZE = 10;
+    
+    let snake = [{x: 150, y: 150}, {x: 150, y: 160}, {x: 150, y: 170}];
+    let food = {x: 0, y: 0};
+    let dx = 0, dy = -SIZE;
+    let nextDx = 0, nextDy = -SIZE;
+    let score = 0;
+    let speed = 100;
+    let gameInterval = null;
+    let isPaused = false;
+    let hueOffset = 0; // রঙের পরিবর্তনের জন্য
+
+    function createFood() {
+        food.x = Math.floor(Math.random() * GRID) * SIZE;
+        food.y = Math.floor(Math.random() * GRID) * SIZE;
+        if (snake.some(p => p.x === food.x && p.y === food.y)) createFood();
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // খাবার (একটি উজ্জ্বল লাল আপেল)
+        ctx.fillStyle = '#ff3333';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'red';
+        ctx.beginPath();
+        ctx.arc(food.x + 5, food.y + 5, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // রামধনু সাপ আঁকা
+        snake.forEach((part, i) => {
+            // প্রতিটি অংশের জন্য আলাদা রঙ (HSL ব্যবহার করে)
+            const hue = (i * 15 + hueOffset) % 360;
+            ctx.fillStyle = `hsl(${hue}, 100%, 60%)`;
+            
+            // মাথা একটু বড় বা আলাদা দেখাবে
+            if(i === 0) {
+                ctx.fillRect(part.x, part.y, SIZE, SIZE);
+                // চোখ
+                ctx.fillStyle = "white";
+                ctx.fillRect(part.x + 2, part.y + 2, 2, 2);
+                ctx.fillRect(part.x + 6, part.y + 2, 2, 2);
+            } else {
+                ctx.fillRect(part.x + 1, part.y + 1, SIZE - 2, SIZE - 2);
+            }
+        });
+        
+        hueOffset += 5; // রঙ বদলানোর গতি
+    }
+
+    function move() {
+        if (isPaused) return;
+
+        dx = nextDx;
+        dy = nextDy;
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+        // দেয়াল পার হওয়া (Teleport)
+        if (head.x < 0) head.x = canvas.width - SIZE;
+        if (head.x >= canvas.width) head.x = 0;
+        if (head.y < 0) head.y = canvas.height - SIZE;
+        if (head.y >= canvas.height) head.y = 0;
+
+        // নিজের শরীরের সাথে ধাক্কা
+        if (snake.some(p => p.x === head.x && p.y === head.y)) {
+            alert("গেম ওভার! আপনার স্কোর: " + score);
+            resetGame();
+            return;
+        }
+
+        snake.unshift(head);
+
+        // খাবার খাওয়া
+        if (head.x === food.x && head.y === food.y) {
+            score += 1; // একটি খাবারে ১ পয়েন্ট
+            scoreDisplay.innerText = score;
+            createFood();
+        } else {
+            snake.pop();
+        }
+        draw();
+    }
+
+    function resetGame() {
+        snake = [{x: 150, y: 150}, {x: 150, y: 160}, {x: 150, y: 170}];
+        dx = 0; dy = -SIZE;
+        nextDx = 0; nextDy = -SIZE;
+        score = 0;
+        scoreDisplay.innerText = score;
+        createFood();
+    }
+
+    // ইনপুট হ্যান্ডেল
+    const setupBtn = (id, action) => {
+        const btn = document.getElementById(id);
+        btn.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            action();
+        });
+    };
+
+    setupBtn('moveUp', () => { if(dy === 0){ nextDx = 0; nextDy = -SIZE; } });
+    setupBtn('moveDown', () => { if(dy === 0){ nextDx = 0; nextDy = SIZE; } });
+    setupBtn('moveLeft', () => { if(dx === 0){ nextDx = -SIZE; nextDy = 0; } });
+    setupBtn('moveRight', () => { if(dx === 0){ nextDx = SIZE; nextDy = 0; } });
+    
+    setupBtn('pauseBtn', () => {
+        isPaused = !isPaused;
+        pauseImg.src = isPaused ? 
+            "https://img.icons8.com/ios-filled/50/ffffff/play--v1.png" : 
+            "https://img.icons8.com/ios-filled/50/ffffff/pause.png";
+    });
+
+    const setSpeed = (newSpeed, id) => {
+        speed = newSpeed;
+        clearInterval(gameInterval);
+        gameInterval = setInterval(move, speed);
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    };
+
+    setupBtn('s1', () => setSpeed(180, 's1'));
+    setupBtn('s2', () => setSpeed(100, 's2'));
+    setupBtn('s3', () => setSpeed(60, 's3'));
+
+    createFood();
+    gameInterval = setInterval(move, speed);
+</script>
+
+</body>
+</html>

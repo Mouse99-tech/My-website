@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #ffffff10;
+      backdrop-filter: blur(12px);
+      border: 2px solid #ffffff30;
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      max-width: 400px;
+      width: 100%;
+      color: white;
+    }
+
+    .container h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 2px solid #00f2fe;
+      outline: none;
+      margin-bottom: 20px;
+      background: #ffffff;
+      color: #333;
+      transition: 0.3s;
+    }
+
+    input[type="text"]::placeholder {
+      color: #999;
+    }
+
+    input[type="text"]:focus {
+      border-color: #7ef9ff;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #f64f59;
+    }
+
+    #qrcode {
+      margin-top: 30px;
+      padding: 15px;
+      background: #ffffff;
+      border-radius: 15px;
+      display: inline-block;
+      box-shadow: none; /* 🔥 No Glow */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ZeroXploid QR Code Generator</h1>
+    <input type="text" id="text" placeholder="Enter text or URL">
+    <button onclick="generateQRCode()">Generate</button>
+    <br>
+    <div id="qrcode"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    function generateQRCode() {
+      const input = document.getElementById("text").value.trim();
+      const qrDiv = document.getElementById("qrcode");
+      qrDiv.innerHTML = "";
+
+      if (input !== "") {
+        new QRCode(qrDiv, {
+          text: input,
+          width: 200,
+          height: 200,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+        });
+      } else {
+        alert("Please enter something first!");
+      }
+    }
+  </script>
+</body>
+</html>
